@@ -14,8 +14,14 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const unauthorized = await authenticateCronRequest(request);
-        if (unauthorized) return unauthorized;
+        // Accept the platform cron secret, or the project's own scheduler key.
+        const apiKey = request.headers.get("apikey");
+        const schedulerKey = process.env["SUPABASE_PUBLISHABLE_KEY"];
+        const keyMatches = !!apiKey && !!schedulerKey && apiKey === schedulerKey;
+        if (!keyMatches) {
+          const unauthorized = await authenticateCronRequest(request);
+          if (unauthorized) return unauthorized;
+        }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const today = new Date().toISOString().slice(0, 10);
