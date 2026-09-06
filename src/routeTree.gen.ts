@@ -13,9 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as NewRouteImport } from './routes/new'
+import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as StyleGuideRouteImport } from './routes/style-guide'
 import { Route as CategoriesCategoryIdRouteImport } from './routes/categories.$categoryId'
 import { Route as TaskTaskIdRouteImport } from './routes/task.$taskId'
+import { Route as ApiPublicHooksDailyRemindersRouteImport } from './routes/api/public/hooks/daily-reminders'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -37,6 +39,11 @@ const NewRoute = NewRouteImport.update({
   path: '/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RemindersRoute = RemindersRouteImport.update({
+  id: '/reminders',
+  path: '/reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StyleGuideRoute = StyleGuideRouteImport.update({
   id: '/style-guide',
   path: '/style-guide',
@@ -52,24 +59,34 @@ const TaskTaskIdRoute = TaskTaskIdRouteImport.update({
   path: '/task/$taskId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksDailyRemindersRoute =
+  ApiPublicHooksDailyRemindersRouteImport.update({
+    id: '/api/public/hooks/daily-reminders',
+    path: '/api/public/hooks/daily-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/new': typeof NewRoute
+  '/reminders': typeof RemindersRoute
   '/style-guide': typeof StyleGuideRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
   '/task/$taskId': typeof TaskTaskIdRoute
+  '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/new': typeof NewRoute
+  '/reminders': typeof RemindersRoute
   '/style-guide': typeof StyleGuideRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
   '/task/$taskId': typeof TaskTaskIdRoute
+  '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,9 +94,11 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/new': typeof NewRoute
+  '/reminders': typeof RemindersRoute
   '/style-guide': typeof StyleGuideRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
   '/task/$taskId': typeof TaskTaskIdRoute
+  '/api/public/hooks/daily-reminders': typeof ApiPublicHooksDailyRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,27 +107,33 @@ export interface FileRouteTypes {
     | '/auth'
     | '/categories'
     | '/new'
+    | '/reminders'
     | '/style-guide'
     | '/categories/$categoryId'
     | '/task/$taskId'
+    | '/api/public/hooks/daily-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/categories'
     | '/new'
+    | '/reminders'
     | '/style-guide'
     | '/categories/$categoryId'
     | '/task/$taskId'
+    | '/api/public/hooks/daily-reminders'
   id:
     | '__root__'
     | '/'
     | '/auth'
     | '/categories'
     | '/new'
+    | '/reminders'
     | '/style-guide'
     | '/categories/$categoryId'
     | '/task/$taskId'
+    | '/api/public/hooks/daily-reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -116,8 +141,10 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CategoriesRoute: typeof CategoriesRouteWithChildren
   NewRoute: typeof NewRoute
+  RemindersRoute: typeof RemindersRoute
   StyleGuideRoute: typeof StyleGuideRoute
   TaskTaskIdRoute: typeof TaskTaskIdRoute
+  ApiPublicHooksDailyRemindersRoute: typeof ApiPublicHooksDailyRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -150,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reminders': {
+      id: '/reminders'
+      path: '/reminders'
+      fullPath: '/reminders'
+      preLoaderRoute: typeof RemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/style-guide': {
       id: '/style-guide'
       path: '/style-guide'
@@ -169,6 +203,13 @@ declare module '@tanstack/react-router' {
       path: '/task/$taskId'
       fullPath: '/task/$taskId'
       preLoaderRoute: typeof TaskTaskIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/daily-reminders': {
+      id: '/api/public/hooks/daily-reminders'
+      path: '/api/public/hooks/daily-reminders'
+      fullPath: '/api/public/hooks/daily-reminders'
+      preLoaderRoute: typeof ApiPublicHooksDailyRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -191,8 +232,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CategoriesRoute: CategoriesRouteWithChildren,
   NewRoute: NewRoute,
+  RemindersRoute: RemindersRoute,
   StyleGuideRoute: StyleGuideRoute,
   TaskTaskIdRoute: TaskTaskIdRoute,
+  ApiPublicHooksDailyRemindersRoute: ApiPublicHooksDailyRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -44,8 +44,32 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
           });
         }
 
+        // Sender domain is configured: build each summary and hand it to the
+        // project's email sender. The sender module is scaffolded as part of
+        // email setup, so it is resolved at runtime rather than imported.
         let sent = 0;
+        const sender = (await import(
+          /* @vite-ignore */ "@/lib/email-templates/send-email"
+        ).catch(() => null)) as {
+          sendTemplateEmail?: (
+            template: string,
+            to: string,
+            options: { templateData: unknown; idempotencyKey: string },
+          ) => Promise<unknown>;
+        } | null;
+
+        if (!sender?.sendTemplateEmail) {
+          return Response.json({
+            ok: true,
+            delivery: "not_configured",
+            reason: "email_sender_not_scaffolded",
+            due: recipients.length,
+            sent: 0,
+          });
+        }
+
         for (const r of recipients) {
+          if (!r.email) continue;
           const { data: tasks } = await supabaseAdmin
             .from("tasks")
             .select("title, category")
@@ -53,16 +77,7 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
             .eq("deleted", false)
             .eq("done", false);
 
-          if (!r.email) continue;
-
-          // Delivery hand-off: the verified sender is configured, so the summary
-          // for `tasks` is dispatched here through the project's email sender.
-          const { sendTemplateEmail } = await import("@/lib/email-templates/send-email").catch(
-            () => ({ sendTemplateEmail: null as unknown as never }),
-          );
-          if (!sendTemplateEmail) break;
-
-          await sendTemplateEmail("daily-reminder", r.email, {
+          await sender.sendTemplateEmail("daily-reminder", r.email, {
             templateData: { tasks: tasks ?? [] },
             idempotencyKey: `daily-reminder-${r.user_id}-${today}`,
           });
