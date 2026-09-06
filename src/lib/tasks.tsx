@@ -18,7 +18,7 @@ export const CATEGORIES: Category[] = [
 ];
 
 export function categoryOf(id: CategoryId): Category {
-  return CATEGORIES.find((c) => c.id === id) ?? CATEGORIES[0];
+  return CATEGORIES.find((c) => c.id === id) ?? CATEGORIES[0]!;
 }
 
 export type Task = {
@@ -97,17 +97,18 @@ export function TasksProvider({ children }: { children: React.ReactNode }) {
     () => ({
       tasks,
       addTask: ({ title, note, category }) =>
-        setTasks((prev) => [
-          {
+        setTasks((prev) => {
+          const trimmedNote = note?.trim();
+          const task: Task = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
             title: title.trim(),
-            note: note?.trim() || undefined,
             category,
             done: false,
             createdAt: Date.now(),
-          },
-          ...prev,
-        ]),
+            ...(trimmedNote ? { note: trimmedNote } : {}),
+          };
+          return [task, ...prev];
+        }),
       deleteTask: (id) => setTasks((prev) => prev.filter((t) => t.id !== id)),
       toggleTask: (id) =>
         setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))),
