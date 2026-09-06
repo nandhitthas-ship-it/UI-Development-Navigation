@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as NewRouteImport } from './routes/new'
+import { Route as StyleGuideRouteImport } from './routes/style-guide'
 import { Route as CategoriesCategoryIdRouteImport } from './routes/categories.$categoryId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const NewRoute = NewRouteImport.update({
   path: '/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StyleGuideRoute = StyleGuideRouteImport.update({
+  id: '/style-guide',
+  path: '/style-guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategoriesCategoryIdRoute = CategoriesCategoryIdRouteImport.update({
   id: '/$categoryId',
   path: '/$categoryId',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/new': typeof NewRoute
+  '/style-guide': typeof StyleGuideRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/new': typeof NewRoute
+  '/style-guide': typeof StyleGuideRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,29 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/new': typeof NewRoute
+  '/style-guide': typeof StyleGuideRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/categories' | '/new' | '/categories/$categoryId'
+  fullPaths:
+    '/' | '/categories' | '/new' | '/style-guide' | '/categories/$categoryId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categories' | '/new' | '/categories/$categoryId'
-  id: '__root__' | '/' | '/categories' | '/new' | '/categories/$categoryId'
+  to: '/' | '/categories' | '/new' | '/style-guide' | '/categories/$categoryId'
+  id:
+    | '__root__'
+    | '/'
+    | '/categories'
+    | '/new'
+    | '/style-guide'
+    | '/categories/$categoryId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CategoriesRoute: typeof CategoriesRouteWithChildren
   NewRoute: typeof NewRoute
+  StyleGuideRoute: typeof StyleGuideRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -89,6 +106,13 @@ declare module '@tanstack/react-router' {
       path: '/new'
       fullPath: '/new'
       preLoaderRoute: typeof NewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/style-guide': {
+      id: '/style-guide'
+      path: '/style-guide'
+      fullPath: '/style-guide'
+      preLoaderRoute: typeof StyleGuideRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categories/$categoryId': {
@@ -117,6 +141,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CategoriesRoute: CategoriesRouteWithChildren,
   NewRoute: NewRoute,
+  StyleGuideRoute: StyleGuideRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
