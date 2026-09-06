@@ -10,14 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as NewRouteImport } from './routes/new'
 import { Route as StyleGuideRouteImport } from './routes/style-guide'
 import { Route as CategoriesCategoryIdRouteImport } from './routes/categories.$categoryId'
+import { Route as TaskTaskIdRouteImport } from './routes/task.$taskId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriesRoute = CategoriesRouteImport.update({
@@ -40,49 +47,77 @@ const CategoriesCategoryIdRoute = CategoriesCategoryIdRouteImport.update({
   path: '/$categoryId',
   getParentRoute: () => CategoriesRoute,
 } as any)
+const TaskTaskIdRoute = TaskTaskIdRouteImport.update({
+  id: '/task/$taskId',
+  path: '/task/$taskId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/new': typeof NewRoute
   '/style-guide': typeof StyleGuideRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
+  '/task/$taskId': typeof TaskTaskIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/new': typeof NewRoute
   '/style-guide': typeof StyleGuideRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
+  '/task/$taskId': typeof TaskTaskIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/new': typeof NewRoute
   '/style-guide': typeof StyleGuideRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
+  '/task/$taskId': typeof TaskTaskIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/categories' | '/new' | '/style-guide' | '/categories/$categoryId'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categories' | '/new' | '/style-guide' | '/categories/$categoryId'
-  id:
-    | '__root__'
     | '/'
+    | '/auth'
     | '/categories'
     | '/new'
     | '/style-guide'
     | '/categories/$categoryId'
+    | '/task/$taskId'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/auth'
+    | '/categories'
+    | '/new'
+    | '/style-guide'
+    | '/categories/$categoryId'
+    | '/task/$taskId'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/categories'
+    | '/new'
+    | '/style-guide'
+    | '/categories/$categoryId'
+    | '/task/$taskId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   CategoriesRoute: typeof CategoriesRouteWithChildren
   NewRoute: typeof NewRoute
   StyleGuideRoute: typeof StyleGuideRoute
+  TaskTaskIdRoute: typeof TaskTaskIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -92,6 +127,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categories': {
@@ -122,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriesCategoryIdRouteImport
       parentRoute: typeof CategoriesRoute
     }
+    '/task/$taskId': {
+      id: '/task/$taskId'
+      path: '/task/$taskId'
+      fullPath: '/task/$taskId'
+      preLoaderRoute: typeof TaskTaskIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -139,9 +188,11 @@ const CategoriesRouteWithChildren = CategoriesRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   CategoriesRoute: CategoriesRouteWithChildren,
   NewRoute: NewRoute,
   StyleGuideRoute: StyleGuideRoute,
+  TaskTaskIdRoute: TaskTaskIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
