@@ -1,4 +1,5 @@
-import { Check, Trash2 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Check, CloudOff, Pencil, Trash2 } from "lucide-react";
 import { categoryOf, type Task } from "@/lib/tasks";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +23,9 @@ export function TaskCard({
         aria-pressed={task.done}
         className={cn(
           "mt-0.5 grid size-7 shrink-0 place-items-center rounded-full border-2 transition-colors",
-          task.done ? "border-brand bg-brand text-primary-foreground" : "border-border bg-background",
+          task.done
+            ? "border-brand bg-brand text-primary-foreground"
+            : "border-border bg-background",
         )}
       >
         {task.done ? <Check className="size-4" strokeWidth={3} /> : null}
@@ -40,25 +43,46 @@ export function TaskCard({
         {task.note ? (
           <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{task.note}</p>
         ) : null}
-        <span
-          className={cn(
-            "mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide",
-            cat.chip,
-          )}
-        >
-          <span className={cn("size-1.5 rounded-full", cat.dot)} />
-          {cat.label}
-        </span>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <span
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide",
+              cat.chip,
+            )}
+          >
+            <span className={cn("size-1.5 rounded-full", cat.dot)} />
+            {cat.label}
+          </span>
+          {task.dirty ? (
+            <span
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground"
+              title="Waiting to sync"
+            >
+              <CloudOff className="size-3" />
+              Not synced
+            </span>
+          ) : null}
+        </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onDelete}
-        aria-label={`Delete ${task.title}`}
-        className="shrink-0 rounded-full p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-      >
-        <Trash2 className="size-4" />
-      </button>
+      <div className="flex shrink-0 flex-col items-center gap-1">
+        <Link
+          to="/task/$taskId"
+          params={{ taskId: task.id }}
+          aria-label={`Edit ${task.title}`}
+          className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          <Pencil className="size-4" />
+        </Link>
+        <button
+          type="button"
+          onClick={onDelete}
+          aria-label={`Delete ${task.title}`}
+          className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+        >
+          <Trash2 className="size-4" />
+        </button>
+      </div>
     </li>
   );
 }
