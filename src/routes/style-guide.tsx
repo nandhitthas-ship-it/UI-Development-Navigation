@@ -111,7 +111,10 @@ function StyleGuide() {
               note: "Notes sit under the title and clamp after two lines.",
               category: "work",
               done: false,
-              createdAt: 0,
+              deleted: false,
+              dirty: false,
+              createdAt: "2026-01-01T00:00:00.000Z",
+              updatedAt: "2026-01-01T00:00:00.000Z",
             }}
             onToggle={() => {}}
             onDelete={() => {}}
@@ -122,7 +125,10 @@ function StyleGuide() {
               title: "Completed task",
               category: "health",
               done: true,
-              createdAt: 0,
+              deleted: false,
+              dirty: false,
+              createdAt: "2026-01-01T00:00:00.000Z",
+              updatedAt: "2026-01-01T00:00:00.000Z",
             }}
             onToggle={() => {}}
             onDelete={() => {}}
