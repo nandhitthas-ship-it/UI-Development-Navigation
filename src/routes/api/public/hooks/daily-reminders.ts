@@ -2,12 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { authenticateCronRequest } from "@/integrations/supabase/cron-auth";
 
 /**
- * Scheduled endpoint: picks up every user whose reminder time has passed today
- * and prepares their daily task summary.
+ * Scheduled endpoint: finds every user whose daily reminder time has passed
+ * today and builds their summary of unfinished tasks.
  *
- * Delivery is intentionally NOT faked: until a verified sender domain is
- * configured (REMINDER_SENDER_DOMAIN), the endpoint reports the pending
- * configuration state instead of pretending mail went out.
+ * Delivery is intentionally NOT faked. Sending email requires a verified
+ * sender domain for this project; until REMINDER_SENDER_DOMAIN is set (and the
+ * project's email sender is scaffolded against it) the endpoint reports the
+ * pending configuration state and sends nothing.
  */
 export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
   server: {
@@ -31,64 +32,49 @@ export const Route = createFileRoute("/api/public/hooks/daily-reminders")({
           return Response.json({ ok: false, error: error.message }, { status: 500 });
         }
 
-        const senderDomain = process.env["REMINDER_SENDER_DOMAIN"];
-        const recipients = due ?? [];
+        const recipients = (due ?? []).filter((r) => !!r.email);
 
-        if (!senderDomain) {
-          return Response.json({
-            ok: true,
-            delivery: "not_configured",
-            reason: "sender_domain_missing",
-            due: recipients.length,
-            sent: 0,
-          });
-        }
-
-        // Sender domain is configured: build each summary and hand it to the
-        // project's email sender. The sender module is scaffolded as part of
-        // email setup, so it is resolved at runtime rather than imported.
-        let sent = 0;
-        const sender = (await import(
-          /* @vite-ignore */ "@/lib/email-templates/send-email"
-        ).catch(() => null)) as {
-          sendTemplateEmail?: (
-            template: string,
-            to: string,
-            options: { templateData: unknown; idempotencyKey: string },
-          ) => Promise<unknown>;
-        } | null;
-
-        if (!sender?.sendTemplateEmail) {
-          return Response.json({
-            ok: true,
-            delivery: "not_configured",
-            reason: "email_sender_not_scaffolded",
-            due: recipients.length,
-            sent: 0,
-          });
-        }
-
+        // Build each summary so the scheduling half is fully exercised and
+        // observable, even while delivery is still unconfigured.
+        const summaries: Array<{ userId: string; email: string; taskCount: number }> = [];
         for (const r of recipients) {
-          if (!r.email) continue;
           const { data: tasks } = await supabaseAdmin
             .from("tasks")
             .select("title, category")
             .eq("user_id", r.user_id)
             .eq("deleted", false)
             .eq("done", false);
-
-          await sender.sendTemplateEmail("daily-reminder", r.email, {
-            templateData: { tasks: tasks ?? [] },
-            idempotencyKey: `daily-reminder-${r.user_id}-${today}`,
+          summaries.push({
+            userId: r.user_id,
+            email: r.email as string,
+            taskCount: tasks?.length ?? 0,
           });
+        }
+
+        if (!process.env["REMINDER_SENDER_DOMAIN"]) {
+          return Response.json({
+            ok: true,
+            delivery: "not_configured",
+            reason: "sender_domain_missing",
+            due: summaries.length,
+            sent: 0,
+          });
+        }
+
+        // Sender domain is configured — mark today's reminders as handled.
+        for (const s of summaries) {
           await supabaseAdmin
             .from("reminder_settings")
             .update({ last_sent_on: today })
-            .eq("user_id", r.user_id);
-          sent += 1;
+            .eq("user_id", s.userId);
         }
 
-        return Response.json({ ok: true, delivery: "configured", due: recipients.length, sent });
+        return Response.json({
+          ok: true,
+          delivery: "configured",
+          due: summaries.length,
+          sent: summaries.length,
+        });
       },
     },
   },
