@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus, Search, X } from "lucide-react";
+import { Download, Plus, Search, X } from "lucide-react";
 import { Screen } from "@/components/Screen";
 import { SyncBar } from "@/components/SyncBar";
 import { TaskCard } from "@/components/TaskCard";
@@ -43,6 +43,22 @@ function TasksScreen() {
   });
   const open = tasks.filter((t) => !t.done).length;
 
+  const exportTasks = () => {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      tasks: tasks.filter((t) => !t.deleted),
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tapkeep-tasks-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Screen
       title="Today"
@@ -58,6 +74,15 @@ function TasksScreen() {
       }
     >
       <SyncBar />
+
+      <button
+        type="button"
+        onClick={exportTasks}
+        className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3 text-sm font-semibold text-muted-foreground transition-transform active:scale-[0.98]"
+      >
+        <Download className="size-4" />
+        Export my tasks as a file
+      </button>
 
       <div className="relative mb-4">
         <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
