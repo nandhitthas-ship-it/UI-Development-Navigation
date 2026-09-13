@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus, Search, X } from "lucide-react";
+import { Download, Plus, Search, X } from "lucide-react";
 import { Screen } from "@/components/Screen";
 import { SyncBar } from "@/components/SyncBar";
 import { TaskCard } from "@/components/TaskCard";
@@ -42,6 +42,22 @@ function TasksScreen() {
     return inCategory && matches;
   });
   const open = tasks.filter((t) => !t.done).length;
+
+  const exportTasks = () => {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      tasks: tasks.filter((t) => !t.deleted),
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tapkeep-tasks-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <Screen
