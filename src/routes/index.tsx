@@ -75,6 +75,15 @@ function TasksScreen() {
     >
       <SyncBar />
 
+      <button
+        type="button"
+        onClick={exportTasks}
+        className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3 text-sm font-semibold text-muted-foreground transition-transform active:scale-[0.98]"
+      >
+        <Download className="size-4" />
+        Export my tasks as a file
+      </button>
+
       <div className="relative mb-4">
         <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
