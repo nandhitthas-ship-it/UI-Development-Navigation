@@ -1,0 +1,48 @@
+{
+  "$comment": "Static export snapshot of the default task set for Tapkeep. Regenerate from the app by exporting your live tasks; this file is a committed reference/backup, not the live data source.",
+  "exportedAt": "2026-09-13T15:51:00.000Z",
+  "app": "Tapkeep",
+  "storageKey": "tapkeep.tasks.v2",
+  "tasks": [
+    {
+      "id": "a1f3c2e0-4b8d-4c1a-9e7f-2d1a3f5b8c01",
+      "title": "Pack gym bag for tomorrow",
+      "note": "Shoes, towel, water bottle",
+      "category": "health",
+      "done": false,
+      "deleted": false,
+      "createdAt": "2026-09-13T15:51:00.000Z",
+      "updatedAt": "2026-09-13T15:51:00.000Z"
+    },
+    {
+      "id": "a1f3c2e0-4b8d-4c1a-9e7f-2d1a3f5b8c02",
+      "title": "Send design handoff to Priya",
+      "note": null,
+      "category": "work",
+      "done": false,
+      "deleted": false,
+      "createdAt": "2026-09-13T15:51:00.000Z",
+      "updatedAt": "2026-09-13T15:51:00.000Z"
+    },
+    {
+      "id": "a1f3c2e0-4b8d-4c1a-9e7f-2d1a3f5b8c03",
+      "title": "Pick up parcel from the post office",
+      "note": null,
+      "category": "errands",
+      "done": false,
+      "deleted": false,
+      "createdAt": "2026-09-13T15:51:00.000Z",
+      "updatedAt": "2026-09-13T15:51:00.000Z"
+    },
+    {
+      "id": "a1f3c2e0-4b8d-4c1a-9e7f-2d1a3f5b8c04",
+      "title": "Call grandma",
+      "note": null,
+      "category": "personal",
+      "done": true,
+      "deleted": false,
+      "createdAt": "2026-09-13T15:51:00.000Z",
+      "updatedAt": "2026-09-13T15:51:00.000Z"
+    }
+  ]
+}
