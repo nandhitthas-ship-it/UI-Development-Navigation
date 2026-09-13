@@ -4,6 +4,7 @@ import { Download, Plus, Search, X } from "lucide-react";
 import { Screen } from "@/components/Screen";
 import { SyncBar } from "@/components/SyncBar";
 import { TaskCard } from "@/components/TaskCard";
+import { toast } from "sonner";
 import { CATEGORIES, useTasks, type CategoryId } from "@/lib/tasks";
 import { cn } from "@/lib/utils";
 
@@ -48,15 +49,30 @@ function TasksScreen() {
       exportedAt: new Date().toISOString(),
       tasks: tasks.filter((t) => !t.deleted),
     };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
-      type: "application/json",
-    });
+    const text = JSON.stringify(payload, null, 2);
+    const filename = `tapkeep-tasks-${new Date().toISOString().slice(0, 10)}.json`;
+    const blob = new Blob([text], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `tapkeep-tasks-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+
+    try {
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.rel = "noopener";
+      // the anchor must be in the document for the download to start in some browsers
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      toast.success("Saved to your Downloads", { description: filename });
+    } catch {
+      window.open(url, "_blank");
+      toast.message("Opened your tasks file in a new tab", {
+        description: "Use your browser's Save option to keep it.",
+      });
+    }
+
+    // give the browser time to start writing the file before the link is released
+    window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
   };
 
   return (
